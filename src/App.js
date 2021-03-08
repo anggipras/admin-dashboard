@@ -17,7 +17,6 @@ function App() {
           <Route exact path='/user' component={User} />
           <Route exact path='/upload' component={Uploadresi} />
           <Route exact path='/login' component={Login} />
-          <Route exact path='/login' component={Login} />
           <Route exact path='/register' component={Register} />
         </Switch>
       </div >

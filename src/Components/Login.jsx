@@ -25,7 +25,6 @@ const Login = () => {
         }).then((res)=> {
             Cookies.set('token', res.data.data.access_token)
             localStorage.setItem('name', JSON.stringify(res.data.data.name))
-            console.log('login berhasil');
             History.push('/')
         })
     }

@@ -15,6 +15,7 @@ import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 import Cookies from 'js-cookie'
 import Swal from 'sweetalert2'
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -69,12 +70,16 @@ const Users = (props) => {
     const [totalUser, settotalUser] = useState(null)
     const [find, setFind] = useState('')
     const [filterPerson, setfilterPerson] = useState([])
-    var token = Cookies.get('token')
+    const History = useHistory()
 
     useEffect(() => {
+        var tokenCook = Cookies.get('token')
+        if (!tokenCook) {
+            History.push('/login')
+        }
         Axios.get('https://devapi.kmdcargo.com/users', {
             headers: {
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${tokenCook}`
             }
         })
             .then((res) => {
