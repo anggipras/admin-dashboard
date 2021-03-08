@@ -3,6 +3,7 @@ import './style.css'
 import { Button, Input } from 'reactstrap';
 import HeaderUpload from '../View/HeaderUpload'
 import Axios from 'axios'
+import SideMenu from '../View/Sidemenu'
 import Cookies from 'js-cookie'
 
 const UploadResi = () => {
@@ -31,6 +32,7 @@ const UploadResi = () => {
     return (
         <>
             <HeaderUpload />
+            <SideMenu />
             <div className="mainsection">
                 <div style={{ fontWeight: 'bolder', marginBottom: '10px', fontSize: '20px' }}>
                     Upload Resi
@@ -38,7 +40,7 @@ const UploadResi = () => {
                 <div style={{ marginBottom: '20px' }}>
                     <Input type="file" onChange={onFileChange} style={{ border: '1px solid black' }} />
                 </div>
-                <Button onClick={uploadRes} style={{ background: 'gray', border: 'none', width: '100px', height: '30px', marginBottom: '10px' }}>
+                <Button onClick={uploadRes} style={{ background: 'gray', border: 'none', width: '150px', height: '30px', marginBottom: '10px' }}>
                     Upload Resi
             </Button>
             </div>
