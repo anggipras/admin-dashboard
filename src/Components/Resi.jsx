@@ -96,7 +96,7 @@ const Resi = (props) => {
             if (data) {
                 let reduxData = resiData
                 var validData = reduxData.filter((val, ind) => {
-                    return val.resi.toLocaleLowerCase().includes(data)
+                    return val.resi.toLocaleLowerCase().includes(data) || val.mark.toLocaleLowerCase().includes(data)
                 })
                 console.log(validData);
                 setfilteredData(validData)

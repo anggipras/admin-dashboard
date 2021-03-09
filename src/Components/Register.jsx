@@ -72,7 +72,7 @@ const Register = () => {
 
     return (
         <div class="log-form">
-            <h2>Login to your account</h2>
+            <h2>Register your account</h2>
             <form onSubmit={regisBut}>
                 <input onChange={(e) => onUserChange(e)} type="text" title="username" placeholder="nama" />
                 <input onChange={(e) => onEmailChange(e)} type="text" title="email" placeholder="email" />

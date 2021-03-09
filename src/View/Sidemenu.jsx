@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.css'
 import { Link } from 'react-router-dom'
 import Blanjaimport from '../assets/Logo/Blanjaimport.png'
+import { useDispatch, useSelector } from 'react-redux';
 
 const Sidemenu = () => {
+    const dispatch = useDispatch()
+    const Allredu=useSelector(state=>state.Allredu)
+
+    const changeRouteA = () => {
+        dispatch({type: 'BUTTA'})
+    }
+
+    const changeRouteB = () => {
+        dispatch({type: 'BUTTB'})
+    }
 
     return (
         <div className='sidemenu hidden'>
@@ -12,8 +23,8 @@ const Sidemenu = () => {
                     <img width='100%' height='100%' src={Blanjaimport} alt="logo" />
                 </div>
                 <div className="allmenu">
-                    <Link to='/' style={{textDecoration: 'none', color: 'black'}}>
-                        <div className="listmenu">
+                    <Link to='/' style={{textDecoration: 'none', color: 'black'}} onClick={changeRouteB}>
+                        <div className={Allredu.buttonChange? "listmenu" : "listmenu active"}>
                             <div className='thumbnail'>
                                 <span><i className="fas fa-home"></i></span>
                             </div>
@@ -22,8 +33,8 @@ const Sidemenu = () => {
                             </div>
                         </div>
                     </Link>
-                    <Link to='/user' style={{textDecoration: 'none', color: 'black'}}>
-                        <div className="listmenu">
+                    <Link to='/user' style={{textDecoration: 'none', color: 'black'}} onClick={changeRouteA}>
+                        <div className={Allredu.buttonChange? "listmenu active": "listmenu"}>
                             <div className='thumbnail'>
                                 <span><i className="fas fa-users"></i></span>
                             </div>

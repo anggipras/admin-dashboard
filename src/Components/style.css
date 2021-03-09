@@ -59,6 +59,10 @@
     justify-content: center
 }
 
+.loginside:hover {
+    cursor: pointer;
+}
+
 .welcome .blockname {
     color: #23c7c6;
     font-weight: 600;
