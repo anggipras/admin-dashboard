@@ -17,6 +17,7 @@ import Cookies from 'js-cookie'
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 import Swal from 'sweetalert2'
+import TablePagination from '@material-ui/core/TablePagination';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -72,6 +73,8 @@ const Resi = (props) => {
     const [filteredData, setfilteredData] = useState([])
     const [totalResi, setTotalResi] = useState(null)
     const History = useHistory()
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
         var tokenCook = Cookies.get('token')
@@ -134,11 +137,20 @@ const Resi = (props) => {
         })
     }
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
     const renderTable = () => {
         let allData
         if (!filteredData) {
             let reduxData = resiData
-            allData = reduxData.map((resi, index) => {
+            allData = reduxData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((resi, index) => {
                 return (
                     <TableRow key={index}>
                         <TableCell>
@@ -304,7 +316,7 @@ const Resi = (props) => {
                         />
                     </div>
                     <div className="loginside">
-                        <div onClick={logOut} className="welcome hidewelcome"><span className='blockname'>{userName}</span></div>
+                        <div onClick={logOut} className="welcome hidewelcome">Halo, <span className='blockname'>{userName}</span></div>
                     </div>
                 </div>
             </div>
@@ -312,12 +324,12 @@ const Resi = (props) => {
             <div className="mainsection">
                 <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row-reverse' }}>
                     <Link to='/upload'>
-                        <Button style={{ background: 'gray', border: 'none', width: '150px', height: '30px', marginBottom: '10px' }} className='my-2'>
+                        <Button style={{ background: 'gray', border: 'none', width: '150px', height: '50px', marginBottom: '10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bolder' }} className='my-2'>
                             Upload Resi
                     </Button>
                     </Link>
                     <div style={{ fontWeight: 'bolder' }}>
-                        Menampilkan 1 - 10 dari {totalResi}
+                        Menampilkan {totalResi}
                     </div>
                 </div>
                 <Paper className={classes.root}>
@@ -325,19 +337,19 @@ const Resi = (props) => {
                         <Table stickyHeader aria-label="sticky table" style={{ width: "auto", tableLayout: "auto" }}>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Kode Marking</TableCell>
-                                    <TableCell>Resi</TableCell>
-                                    <TableCell>Barcode</TableCell>
-                                    <TableCell>Barang</TableCell>
-                                    <TableCell>RMB</TableCell>
-                                    <TableCell>Supp</TableCell>
-                                    <TableCell>CTNS</TableCell>
-                                    <TableCell>Qty</TableCell>
-                                    <TableCell>Berat</TableCell>
-                                    <TableCell>Volume</TableCell>
-                                    <TableCell>Tgl GIW</TableCell>
-                                    <TableCell>Tgl Loading</TableCell>
-                                    <TableCell>OTW</TableCell>
+                                    <TableCell className='tableStyle'>Kode Marking</TableCell>
+                                    <TableCell className='tableStyle'>Resi</TableCell>
+                                    <TableCell className='tableStyle'>Barcode</TableCell>
+                                    <TableCell className='tableStyle'>Barang</TableCell>
+                                    <TableCell className='tableStyle'>RMB</TableCell>
+                                    <TableCell className='tableStyle'>Supp</TableCell>
+                                    <TableCell className='tableStyle'>CTNS</TableCell>
+                                    <TableCell className='tableStyle'>Qty</TableCell>
+                                    <TableCell className='tableStyle'>Berat</TableCell>
+                                    <TableCell className='tableStyle'>Volume</TableCell>
+                                    <TableCell className='tableStyle'>Tgl GIW</TableCell>
+                                    <TableCell className='tableStyle'>Tgl Loading</TableCell>
+                                    <TableCell className='tableStyle'>OTW</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -345,6 +357,15 @@ const Resi = (props) => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 100]}
+                        component="div"
+                        count={resiData.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
                 </Paper>
             </div>
         </>

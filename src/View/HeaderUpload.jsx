@@ -42,7 +42,7 @@ const HeaderUpload = () => {
                     </div>
                 </div>
                 <div className="loginside">
-                    <div onClick={logOut} className="welcome hidewelcome"><span className='blockname'>{userName}</span></div>
+                    <div onClick={logOut} className="welcome hidewelcome">Halo, <span className='blockname'>{userName}</span></div>
                 </div>
             </div>
         </div>

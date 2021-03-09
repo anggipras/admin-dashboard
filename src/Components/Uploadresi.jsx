@@ -57,7 +57,7 @@ const UploadResi = () => {
                 <div style={{ marginBottom: '20px' }}>
                     <Input type="file" onChange={onFileChange} style={{ border: '1px solid black' }} />
                 </div>
-                <Button onClick={uploadRes} style={{ background: 'gray', border: 'none', width: '150px', height: '30px', marginBottom: '10px' }}>
+                <Button onClick={uploadRes} style={{ background: 'gray', border: 'none', width: '150px', height: '50px', marginBottom: '10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bolder' }}>
                     Upload Resi
             </Button>
             </div>

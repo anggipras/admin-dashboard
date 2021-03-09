@@ -43,7 +43,7 @@ const Login = () => {
             <form onSubmit={loginBut}>
                 <input onChange={(e) => onUserChange(e)} type="text" title="username" placeholder="username" />
                 <input onChange={(e) => onPassChange(e)} type="password" title="username" placeholder="password" />
-                <button onSubmit={loginBut} type="submit" className="btn">Login</button>
+                <button style={{backgroundColor: 'gray'}} onSubmit={loginBut} type="submit" className="btn">Login</button>
                 <Link to='/register'>
                     <h4>Belum punya akun?</h4>
                 </Link>

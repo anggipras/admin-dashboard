@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './style.css'
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -7,6 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TablePagination from '@material-ui/core/TablePagination';
 import { makeStyles } from '@material-ui/core/styles';
 import Axios from 'axios'
 import SideMenu from '../View/Sidemenu'
@@ -16,6 +17,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Cookies from 'js-cookie'
 import Swal from 'sweetalert2'
 import { useHistory } from 'react-router-dom';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -71,9 +73,13 @@ const Users = (props) => {
     const [find, setFind] = useState('')
     const [filterPerson, setfilterPerson] = useState([])
     const History = useHistory()
+    const [modaledit, setModaledit] = useState(false);
+    const [indexedit, setindexedit] = useState(0)
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    var tokenCook = Cookies.get('token')
 
     useEffect(() => {
-        var tokenCook = Cookies.get('token')
         if (!tokenCook) {
             History.push('/login')
         }
@@ -90,11 +96,21 @@ const Users = (props) => {
     }, [])
 
 
+    const [editform, seteditform] = useState({
+        namauser: useRef(),
+        emailuser: useRef(),
+        phoneuser: useRef(),
+        addressuser: useRef(),
+        ktpuser: useRef(),
+        markuser: useRef(),
+        passuser: useRef(),
+    })
+
     useEffect(() => {
         const getFindData = (data) => {
-            if(data) {
+            if (data) {
                 let reduxPeople = userData
-                var validperson = reduxPeople.filter((val, ind)=> {
+                var validperson = reduxPeople.filter((val, ind) => {
                     return val.email.toLocaleLowerCase().includes(data)
                 })
                 console.log(validperson);
@@ -104,7 +120,7 @@ const Users = (props) => {
             }
         }
         getFindData(find)
-    },[find, userData])
+    }, [find, userData])
 
     const logOut = () => {
         Swal.fire({
@@ -132,11 +148,54 @@ const Users = (props) => {
 
     var userName = JSON.parse(localStorage.getItem('name'))
 
+    const onEditClick = (index) => {
+        console.log(index);
+        setindexedit(index)
+        setModaledit(true)
+    }
+
+    const onSaveeditClick = (dataID) => {
+        var mark = editform.markuser.current.value
+        // var password = editform.passuser.current.value
+        var name = editform.namauser.current.value
+        var address = editform.addressuser.current.value
+        var phone = editform.phoneuser.current.value
+        var email = editform.emailuser.current.value
+
+        var obj = { mark, name, address, phone, email }
+
+        Axios.put(`https://devapi.kmdcargo.com/users/${dataID}`, obj, {
+            headers: {
+                "Authorization": `Bearer ${tokenCook}`
+            }
+        })
+            .then(() => {
+                Axios.get('https://devapi.kmdcargo.com/users', {
+                    headers: {
+                        "Authorization": `Bearer ${tokenCook}`
+                    }
+                })
+                    .then((res) => {
+                        console.log(res.data.data);
+                        setuserData(res.data.data)
+                        settotalUser(res.data.data.length)
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: `${res.data.message}`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        setModaledit(false)
+                    }).catch((err) => console.log(err))
+            }).catch((err) => console.log(err))
+    }
+
     const renderTable = () => {
         let allData
-        if(!filterPerson) {
+        if (!filterPerson) {
             let reduxPeople = userData
-            allData = reduxPeople.map((user, index) => {
+            allData = reduxPeople.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user, index) => {
                 return (
                     <TableRow key={index}>
                         <TableCell>
@@ -167,12 +226,17 @@ const Users = (props) => {
                         </TableCell>
                         <TableCell>
                             <div style={{ width: 'auto' }}>
-                                data: {user.data_id}
+                                {user.password ? user.password : user.data_id}
                             </div>
                         </TableCell>
                         <TableCell>
                             <div style={{ width: 'auto', boxSizing: 'border-box', backgroundColor: 'gainsboro' }}>
                                 {user.active ? "Sudah di Acc" : "Belum di Acc"}
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div style={{ width: 'auto' }}>
+                                <Button onClick={() => onEditClick(index)}>Edit</Button>
                             </div>
                         </TableCell>
                     </TableRow>
@@ -210,12 +274,17 @@ const Users = (props) => {
                         </TableCell>
                         <TableCell>
                             <div style={{ width: 'auto' }}>
-                                data: {user.data_id}
+                                {user.password ? user.password : user.data_id}
                             </div>
                         </TableCell>
                         <TableCell>
                             <div style={{ width: 'auto', boxSizing: 'border-box', backgroundColor: 'gainsboro' }}>
                                 {user.active ? "Sudah di Acc" : "Belum di Acc"}
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div style={{ width: 'auto' }}>
+                                <Button onClick={() => onEditClick(index)}>Edit</Button>
                             </div>
                         </TableCell>
                     </TableRow>
@@ -225,8 +294,60 @@ const Users = (props) => {
         return allData
     }
 
+    const toggleedit = () => setModaledit(!modaledit);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
     return (
         <>
+            {
+                userData.length ?
+                    filterPerson.length ?
+                        <div style={{ background: 'linear-gradient(180deg, #6bfefe81 10%, #fafafa 70%)' }}>
+                            <Modal isOpen={modaledit} toggle={toggleedit} >
+                                <ModalHeader toggle={toggleedit}>edit data {filterPerson.length ? filterPerson[indexedit].name : ''}</ModalHeader>
+                                <ModalBody>
+                                    <input type='text' defaultValue={filterPerson[indexedit].name} ref={editform.namauser} placeholder='Masukkan Nama' className='form-control mb-2' />
+                                    <input type='text' defaultValue={filterPerson[indexedit].email} ref={editform.emailuser} placeholder='Masukkan Email' className='form-control mb-2' />
+                                    <input type='text' defaultValue={filterPerson[indexedit].phone} ref={editform.phoneuser} placeholder='Masukkan nomor handphone' className='form-control mb-2' />
+                                    <input type='text' defaultValue={filterPerson[indexedit].address} ref={editform.addressuser} placeholder='Masukkan alamat' className='form-control mb-2' />
+                                    <input type='text' defaultValue={filterPerson[indexedit].ktp} ref={editform.ktpuser} placeholder='Masukkan ktp' className='form-control mb-2' />
+                                    <input type='text' defaultValue={filterPerson[indexedit].mark} ref={editform.markuser} placeholder='Masukkan kode mark' className='form-control mb-2' />
+                                    <input type='text' defaultValue={filterPerson[indexedit].password} ref={editform.passuser} placeholder='Masukkan password' className='form-control mb-2' />
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="primary" onClick={() => onSaveeditClick(filterPerson[indexedit].data_id)}>Simpan/Ubah</Button>
+                                    <Button color="secondary" onClick={toggleedit}>Batal</Button>
+                                </ModalFooter>
+                            </Modal>
+                        </div>
+                        :
+                        <Modal isOpen={modaledit} toggle={toggleedit} >
+                            <ModalHeader toggle={toggleedit}>edit data {userData.length ? userData[indexedit].name : ''}</ModalHeader>
+                            <ModalBody>
+                                <input type='text' defaultValue={userData[indexedit].name} ref={editform.namauser} placeholder='Masukkan Nama' className='form-control mb-2' />
+                                <input type='text' defaultValue={userData[indexedit].email} ref={editform.emailuser} placeholder='Masukkan Email' className='form-control mb-2' />
+                                <input type='text' defaultValue={userData[indexedit].phone} ref={editform.phoneuser} placeholder='Masukkan nomor handphone' className='form-control mb-2' />
+                                <input type='text' defaultValue={userData[indexedit].address} ref={editform.addressuser} placeholder='Masukkan alamat' className='form-control mb-2' />
+                                <input type='text' defaultValue={userData[indexedit].ktp} ref={editform.ktpuser} placeholder='Masukkan ktp' className='form-control mb-2' />
+                                <input type='text' defaultValue={userData[indexedit].mark} ref={editform.markuser} placeholder='Masukkan kode mark' className='form-control mb-2' />
+                                <input type='text' defaultValue={userData[indexedit].password} ref={editform.passuser} placeholder='Masukkan password' className='form-control mb-2' />
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="primary" onClick={() => onSaveeditClick(userData[indexedit].data_id)}>Simpan/Ubah</Button>
+                                <Button color="secondary" onClick={toggleedit}>Batal</Button>
+                            </ModalFooter>
+                        </Modal>
+                    :
+                    null
+            }
             <div className='header'>
                 <div className="section">
                     <div className="logoside">
@@ -248,32 +369,33 @@ const Users = (props) => {
                                 input: classes.inputInput,
                             }}
                             inputProps={{ 'aria-label': 'search' }}
-                            onChange={(e)=> setFind(e.target.value.toLocaleLowerCase())}
+                            onChange={(e) => setFind(e.target.value.toLocaleLowerCase())}
                         />
                     </div>
                     <div className="loginside">
-                        <div onClick={logOut} className="welcome hidewelcome"><span className='blockname'>{userName}</span></div>
+                        <div onClick={logOut} className="welcome hidewelcome">Halo, <span className='blockname'>{userName}</span></div>
                     </div>
                 </div>
             </div>
             <SideMenu />
             <div className="mainsection">
                 <div style={{ fontWeight: 'bolder', marginBottom: '10px' }}>
-                    Menampilkan 1 - 10 dari {totalUser}
+                    Menampilkan {totalUser}
                 </div>
                 <Paper className={classes.root}>
                     <TableContainer className={classes.container}>
                         <Table stickyHeader aria-label="sticky table" style={{ width: "auto", tableLayout: "auto" }}>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Nama</TableCell>
-                                    <TableCell>Email</TableCell>
-                                    <TableCell>Nomor HP</TableCell>
-                                    <TableCell>Alamat</TableCell>
-                                    <TableCell>KTP</TableCell>
-                                    <TableCell>Kode Marking</TableCell>
-                                    <TableCell>Password</TableCell>
-                                    <TableCell>Status</TableCell>
+                                    <TableCell className='tableStyle'>Nama</TableCell>
+                                    <TableCell className='tableStyle'>Email</TableCell>
+                                    <TableCell className='tableStyle'>Nomor HP</TableCell>
+                                    <TableCell className='tableStyle'>Alamat</TableCell>
+                                    <TableCell className='tableStyle'>KTP</TableCell>
+                                    <TableCell className='tableStyle'>Kode Marking</TableCell>
+                                    <TableCell className='tableStyle'>Password</TableCell>
+                                    <TableCell className='tableStyle'>Status</TableCell>
+                                    <TableCell className='tableStyle'>Action</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -281,6 +403,15 @@ const Users = (props) => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 100]}
+                        component="div"
+                        count={userData.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
                 </Paper>
             </div>
         </>

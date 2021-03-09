@@ -78,7 +78,7 @@ const Register = () => {
                 <input onChange={(e) => onEmailChange(e)} type="text" title="email" placeholder="email" />
                 <input onChange={(e) => onPhoneChange(e)} type="text" title="phone" placeholder="no handphone" />
                 <input onChange={(e) => onAddressChange(e)} type="text" title="address" placeholder="alamat" />
-                <button onSubmit={regisBut} type="submit" className="btn">Register</button>
+                <button style={{backgroundColor: 'gray'}} onSubmit={regisBut} type="submit" className="btn">Register</button>
                 <Link to='/login'>
                     <h4>Sudah ada akun?</h4>
                 </Link>
