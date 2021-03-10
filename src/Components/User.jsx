@@ -166,10 +166,14 @@ const Users = (props) => {
         var active = editform.activeuser.current.value == 'true'
 
         var obj
-        if(password) {
+        if(password && ktp) {
             obj = { mark, password, name, address, phone, email, ktp, active }
-        } else {
+        } else if(password && !ktp) {
+            obj = { mark, password, name, address, phone, email, active }
+        } else if(!password && ktp) {
             obj = { mark, name, address, phone, email, ktp, active }
+        } else {
+            obj = { mark, name, address, phone, email, active }
         }
 
         console.log(obj);
