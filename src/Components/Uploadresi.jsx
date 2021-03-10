@@ -32,7 +32,7 @@ const UploadResi = () => {
         importantdata.append('document', files)
         Axios.post('https://devapi.kmdcargo.com/orders/excel', importantdata, {
             headers: {
-                "Authorization": `Bearer ${tokenCook}`
+                "Authorization": `Bearer ${tokenCook}`,
             }
         })
             .then(() => {

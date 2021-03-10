@@ -104,6 +104,7 @@ const Users = (props) => {
         ktpuser: useRef(),
         markuser: useRef(),
         passuser: useRef(),
+        activeuser: useRef(),
     })
 
     useEffect(() => {
@@ -156,13 +157,22 @@ const Users = (props) => {
 
     const onSaveeditClick = (dataID) => {
         var mark = editform.markuser.current.value
-        // var password = editform.passuser.current.value
+        var password = editform.passuser.current.value
         var name = editform.namauser.current.value
         var address = editform.addressuser.current.value
         var phone = editform.phoneuser.current.value
         var email = editform.emailuser.current.value
+        var ktp = editform.ktpuser.current.value
+        var active = editform.activeuser.current.value == 'true'
 
-        var obj = { mark, name, address, phone, email }
+        var obj
+        if(password) {
+            obj = { mark, password, name, address, phone, email, ktp, active }
+        } else {
+            obj = { mark, name, address, phone, email, ktp, active }
+        }
+
+        console.log(obj);
 
         Axios.put(`https://devapi.kmdcargo.com/users/${dataID}`, obj, {
             headers: {
@@ -216,7 +226,7 @@ const Users = (props) => {
                         </TableCell>
                         <TableCell>
                             <div style={{ width: 'auto' }}>
-                                {user.ktp ? user.ktp : "belum ada"}
+                                {user.ktp ? user.ktp : "*******"}
                             </div>
                         </TableCell>
                         <TableCell>
@@ -226,11 +236,11 @@ const Users = (props) => {
                         </TableCell>
                         <TableCell>
                             <div style={{ width: 'auto' }}>
-                                {user.password ? user.password : user.data_id}
+                                {user.password ? user.password : "*******"}
                             </div>
                         </TableCell>
                         <TableCell>
-                            <div style={{ width: 'auto', boxSizing: 'border-box', backgroundColor: 'gainsboro' }}>
+                            <div style={{ width: 'auto', boxSizing: 'border-box', backgroundColor: user.active ? 'lime' : 'gainsboro' }}>
                                 {user.active ? "Sudah di Acc" : "Belum di Acc"}
                             </div>
                         </TableCell>
@@ -264,7 +274,7 @@ const Users = (props) => {
                         </TableCell>
                         <TableCell>
                             <div style={{ width: 'auto' }}>
-                                {user.ktp ? user.ktp : "belum ada"}
+                                {user.ktp ? user.ktp : "*******"}
                             </div>
                         </TableCell>
                         <TableCell>
@@ -274,11 +284,11 @@ const Users = (props) => {
                         </TableCell>
                         <TableCell>
                             <div style={{ width: 'auto' }}>
-                                {user.password ? user.password : user.data_id}
+                                {user.password ? user.password : "*******"}
                             </div>
                         </TableCell>
                         <TableCell>
-                            <div style={{ width: 'auto', boxSizing: 'border-box', backgroundColor: 'gainsboro' }}>
+                            <div style={{ width: 'auto', boxSizing: 'border-box', backgroundColor: user.active ? 'lime' : 'gainsboro' }}>
                                 {user.active ? "Sudah di Acc" : "Belum di Acc"}
                             </div>
                         </TableCell>
@@ -321,6 +331,7 @@ const Users = (props) => {
                                     <input type='text' defaultValue={filterPerson[indexedit].ktp} ref={editform.ktpuser} placeholder='Masukkan ktp' className='form-control mb-2' />
                                     <input type='text' defaultValue={filterPerson[indexedit].mark} ref={editform.markuser} placeholder='Masukkan kode mark' className='form-control mb-2' />
                                     <input type='text' defaultValue={filterPerson[indexedit].password} ref={editform.passuser} placeholder='Masukkan password' className='form-control mb-2' />
+                                    <input type='text' defaultValue={filterPerson[indexedit].active} ref={editform.activeuser} placeholder='Masukkan status (true/false)' className='form-control mb-2' />
                                 </ModalBody>
                                 <ModalFooter>
                                     <Button color="primary" onClick={() => onSaveeditClick(filterPerson[indexedit].data_id)}>Simpan/Ubah</Button>
@@ -339,6 +350,7 @@ const Users = (props) => {
                                 <input type='text' defaultValue={userData[indexedit].ktp} ref={editform.ktpuser} placeholder='Masukkan ktp' className='form-control mb-2' />
                                 <input type='text' defaultValue={userData[indexedit].mark} ref={editform.markuser} placeholder='Masukkan kode mark' className='form-control mb-2' />
                                 <input type='text' defaultValue={userData[indexedit].password} ref={editform.passuser} placeholder='Masukkan password' className='form-control mb-2' />
+                                <input type='text' defaultValue={userData[indexedit].active} ref={editform.activeuser} placeholder='Masukkan status (true/false)' className='form-control mb-2' />
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="primary" onClick={() => onSaveeditClick(userData[indexedit].data_id)}>Simpan/Ubah</Button>
